@@ -63,7 +63,7 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 
 ## Installation
 
-1. Run `SVGHMIStudio_Setup_1.0.4.exe`
+1. Run `SVGHMIStudio_Setup_2.0.0.exe`
 2. Follow the installation wizard
 3. Choose installation location
 4. Select "Create desktop shortcut" if desired
@@ -274,7 +274,31 @@ MIT License - © M.Alsouki
 
 ## Version History
 
-### v1.0.4 (Current)
+### v2.0.0 (Current)
+
+- Modern VS Code/Figma-inspired UI redesign
+- Fluent UI-style SVG icons replacing all system icons
+- System theme detection (auto dark/light mode from Windows settings)
+- Comprehensive theme-aware QSS stylesheet for all widgets
+- Thin modern scrollbars, flat menus, clean dock panels
+- Theme menu with System/Light/Dark options
+- Fixed transform rendering (SVG column-vector convention)
+- Fixed movement and resize of transformed elements
+- Text font controls (font family dropdown, size, bold, italic, alignment)
+
+### v1.0.5
+
+- Added light/dark theme support (View → Theme)
+- Added logging infrastructure replacing all print() statements
+- Added OS clipboard support for copy/paste between instances
+- Added rotation handle and flip horizontal/vertical transforms
+- Added stroke properties UI (line cap, line join, dash pattern)
+- Added opacity slider with visual canvas feedback
+- Added element snapping (snap to edges and centers)
+- Fixed shortcut conflict (Ctrl+Shift+G)
+- Fixed opacity not rendering on canvas
+
+### v1.0.4
 
 - Fixed text positioning with text-anchor support
 - Fixed SVG rendering for complex nested groups
