@@ -63,7 +63,7 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 
 ## Installation
 
-1. Run `SVGHMIStudio_Setup_3.0.0.exe`
+1. Run `SVGHMIStudio_Setup_3.1.0.exe`
 2. Follow the installation wizard
 3. Choose installation location
 4. Select "Create desktop shortcut" if desired
@@ -152,6 +152,18 @@ Binding expressions are wrapped in double curly braces: `{{expression}}`. They l
 | `'text'` | String literal | `'visible'` |
 | `123` or `0.5` | Numeric literal | `100`, `0.75` |
 
+### Arithmetic & Comparison Operators
+
+| Operator | Description | Example |
+| --- | --- | --- |
+| `+` | Addition | `ParamProps.X + 10` |
+| `-` | Subtraction | `ParamProps.Width - 20` |
+| `*` | Multiplication | `LocalProps.NormalizedValue * 100` |
+| `/` | Division | `ParamProps.Position / 100` |
+| `%` | Modulo | `ParamProps.Index % 2` |
+| `==` | Equal | `ParamProps.State == 1` |
+| `!=` | Not equal | `ParamProps.Error != 0` |
+
 ### Ternary Operator
 
 ```
@@ -174,6 +186,8 @@ Converters transform parameter values for use in SVG attributes.
 | `Converter.RGB` | `RGB(HmiColor)` | Extract RGB hex string, ignoring alpha |
 | `Converter.Alpha` | `Alpha(HmiColor)` | Extract alpha channel as 0.0–1.0 |
 | `Converter.Bounds` | `Bounds(value, min, max)` | Clamp a number between min and max |
+| `Converter.Min` | `Min(num, num)` | Returns the minimum of two numbers |
+| `Converter.Max` | `Max(num, num)` | Returns the maximum of two numbers |
 | `Converter.Darker` | `Darker(HmiColor, deviation)` | Darken a color (deviation 0.0–1.0) |
 | `Converter.Lighter` | `Lighter(HmiColor, deviation)` | Lighten a color (deviation 0.0–1.0) |
 | `Converter.Illuminate` | `Illuminate(HmiColor, deviation, low?, high?)` | Illumination variant with optional range |
@@ -181,6 +195,11 @@ Converters transform parameter values for use in SVG attributes.
 | `Converter.IsNumber` | `IsNumber(value)` | Returns true if value is a number |
 | `Converter.IsBoolean` | `IsBoolean(value)` | Returns true if value is a boolean |
 | `Converter.CountItems` | `CountItems(array)` | Count items in an array |
+| `Converter.FormatPattern` | `FormatPattern(value, pattern)` | Format a value according to a pattern string |
+| `Converter.TextDecoration` | `TextDecoration(HmiFontPart)` | Returns text decoration for a font |
+| `Converter.TextHeight` | `TextHeight(string, HmiFontPart)` | Returns text height for given text and font |
+| `Converter.TextWidth` | `TextWidth(string, HmiFontPart)` | Returns text width for given text and font |
+| `Converter.TextEllipsis` | `TextEllipsis(string, width, HmiFontPart)` | Truncates text with ellipsis if too wide |
 
 ### Comparator Functions
 
@@ -262,6 +281,10 @@ Binding: {{LocalProps.Scaled}}
 {{rotate(ParamProps.Angle, 50, 50)}}
 ```
 
+### Note: HmiProps (Runtime Only)
+
+The WinCC runtime also provides `HmiProps.*` references (e.g., `HmiProps.Width`, `HmiProps.ProcessValue`, `HmiProps.IsActive`). These are built-in screen object model properties available at WinCC runtime only — they cannot be previewed in the editor. You can still use them in binding expressions; they will be exported correctly but won't resolve in the Live Preview.
+
 ---
 
 ## Keyboard Shortcuts
@@ -272,7 +295,8 @@ Binding: {{LocalProps.Scaled}}
 | Open            | Ctrl+O       |
 | Save            | Ctrl+S       |
 | Save As         | Ctrl+Shift+S |
-| Export SVGHMI   | Ctrl+E       |
+| Export SVGHMI   | Ctrl+Shift+E |
+| Validate WinCC  | Ctrl+Shift+V |
 | Undo            | Ctrl+Z       |
 | Redo            | Ctrl+Y       |
 | Delete          | Delete       |
@@ -363,6 +387,41 @@ Binding: {{LocalProps.Scaled}}
 
 ---
 
+## Building from Source
+
+### Prerequisites
+
+- **Node.js** 18+ ([nodejs.org](https://nodejs.org))
+- **Rust** toolchain ([rustup.rs](https://rustup.rs))
+- **Tauri CLI**: `cargo install tauri-cli`
+
+### Development
+
+```bash
+npm install
+npm run tauri dev
+```
+
+This starts a development server with hot-reload. The Tauri window opens automatically.
+
+### Production Build
+
+```bash
+npm run tauri build
+```
+
+The installer (`.msi` / `.exe`) is generated in `src-tauri/target/release/bundle/`.
+
+### Frontend Only (no Tauri)
+
+```bash
+npm run dev
+```
+
+Opens the web UI at `http://localhost:1420` without the Tauri backend. File I/O and export features require the full Tauri build.
+
+---
+
 ## Troubleshooting
 
 ### SVG not displaying correctly
@@ -398,7 +457,32 @@ MIT License - © M.Alsouki
 
 ## Version History
 
-### v3.0.0 (Current)
+### v3.1.0 (Current)
+
+- Enhanced Color Picker with recent colors and popover UI
+- Alignment & Distribution toolbar (align L/C/R/T/M/B, distribute H/V)
+- Arrow key nudging (1px, Shift+Arrow 10px)
+- Fit to Window (Ctrl+Shift+F) and Zoom to Selection (Ctrl+1)
+- Inline text editing (double-click text to edit on canvas)
+- Rulers & Guides (drag from ruler to create guides)
+- Gradient Editor (linear/radial with stop management)
+- Layer visibility (eye icon) and lock (lock icon)
+- Arrange/Z-Order (Ctrl+]/[, Ctrl+Shift+]/[)
+- Stroke panel (dash patterns, line cap, line join)
+- Recent files list in File menu
+- Snap visual feedback (magenta alignment lines)
+- Auto-save & recovery (60s interval, recovery dialog on startup)
+- Polygon tool with point editing (double-click to edit vertices)
+
+### v3.0.1
+
+- Window title shows file path and unsaved indicator (*)
+- Theme preference persists across app restarts
+- Unsaved changes guard on window close
+- Parameter/binding/local def changes now mark document as dirty
+- Full expression reference added to documentation
+
+### v3.0.0
 
 - Complete rewrite: React 18 + TypeScript + Zustand + Vite + TailwindCSS 4 frontend
 - Tauri 2 (Rust) backend replacing Python/Qt, with roxmltree/quick-xml for SVG parsing
