@@ -63,7 +63,7 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 
 ## Installation
 
-1. Run `SVGHMIStudio_Setup_2.0.0.exe`
+1. Run `SVGHMIStudio_Setup_3.0.0.exe`
 2. Follow the installation wizard
 3. Choose installation location
 4. Select "Create desktop shortcut" if desired
@@ -136,6 +136,131 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
    - **Version**: Widget version
 3. Click "Export"
 4. Import the generated `.svghmi` file into your WinCC Unified project
+
+---
+
+## Expression Reference
+
+Binding expressions are wrapped in double curly braces: `{{expression}}`. They link SVG attributes to HMI parameters so graphics update dynamically at runtime.
+
+### Reference Syntax
+
+| Syntax | Description | Example |
+| --- | --- | --- |
+| `ParamProps.Name` | Reference a widget parameter | `ParamProps.FillColor` |
+| `LocalProps.Name` | Reference a local variable | `LocalProps.ScaledValue` |
+| `'text'` | String literal | `'visible'` |
+| `123` or `0.5` | Numeric literal | `100`, `0.75` |
+
+### Ternary Operator
+
+```
+condition ? trueValue : falseValue
+```
+
+| Example | Description |
+| --- | --- |
+| `ParamProps.IsActive ? 'visible' : 'hidden'` | Toggle visibility |
+| `gt(ParamProps.Temp, 100) ? 'red' : 'green'` | Conditional color |
+| `eq(ParamProps.Mode, 1) ? ParamProps.ColorA : ParamProps.ColorB` | Switch between params |
+
+### Converter Functions
+
+Converters transform parameter values for use in SVG attributes.
+
+| Function | Signature | Description |
+| --- | --- | --- |
+| `Converter.RGBA` | `RGBA(HmiColor)` | Convert ARGB hex color (0xAARRGGBB) to `rgba()` CSS value |
+| `Converter.RGB` | `RGB(HmiColor)` | Extract RGB hex string, ignoring alpha |
+| `Converter.Alpha` | `Alpha(HmiColor)` | Extract alpha channel as 0.0–1.0 |
+| `Converter.Bounds` | `Bounds(value, min, max)` | Clamp a number between min and max |
+| `Converter.Darker` | `Darker(HmiColor, deviation)` | Darken a color (deviation 0.0–1.0) |
+| `Converter.Lighter` | `Lighter(HmiColor, deviation)` | Lighten a color (deviation 0.0–1.0) |
+| `Converter.Illuminate` | `Illuminate(HmiColor, deviation, low?, high?)` | Illumination variant with optional range |
+| `Converter.IsString` | `IsString(value)` | Returns true if value is a string |
+| `Converter.IsNumber` | `IsNumber(value)` | Returns true if value is a number |
+| `Converter.IsBoolean` | `IsBoolean(value)` | Returns true if value is a boolean |
+| `Converter.CountItems` | `CountItems(array)` | Count items in an array |
+
+### Comparator Functions
+
+Return `true` or `false`. Arguments are numeric.
+
+| Function | Description | Example |
+| --- | --- | --- |
+| `gt(a, b)` | Greater than (a > b) | `gt(ParamProps.Value, 50)` |
+| `ge(a, b)` | Greater than or equal (a >= b) | `ge(ParamProps.Level, 0)` |
+| `lt(a, b)` | Less than (a < b) | `lt(ParamProps.Temp, 100)` |
+| `le(a, b)` | Less than or equal (a <= b) | `le(ParamProps.Speed, 200)` |
+| `eq(a, b)` | Equal (a === b) | `eq(ParamProps.State, 1)` |
+| `ne(a, b)` | Not equal (a !== b) | `ne(ParamProps.Error, 0)` |
+| `has(a, b)` | Bitwise check | `has(ParamProps.Flags, 4)` |
+
+### Logical Functions
+
+| Function | Description | Example |
+| --- | --- | --- |
+| `and(a, b)` | Logical AND | `and(ParamProps.RunA, ParamProps.RunB)` |
+| `or(a, b)` | Logical OR | `or(ParamProps.Alarm1, ParamProps.Alarm2)` |
+| `not(a)` | Logical NOT | `not(ParamProps.IsHidden)` |
+
+### Math Functions
+
+| Function | Description | Function | Description |
+| --- | --- | --- | --- |
+| `abs(n)` | Absolute value | `sqrt(n)` | Square root |
+| `round(n)` | Round to integer | `pow(n, exp)` | Power |
+| `floor(n)` | Round down | `log(n)` | Natural logarithm |
+| `ceil(n)` | Round up | `log10(n)` | Base-10 logarithm |
+| `sin(n)` | Sine (radians) | `asin(n)` | Inverse sine |
+| `cos(n)` | Cosine (radians) | `acos(n)` | Inverse cosine |
+| `tan(n)` | Tangent (radians) | `atan(n)` | Inverse tangent |
+| `atan2(y, x)` | 2-arg arctangent | `rad2deg(n)` | Radians to degrees |
+| `deg2rad(n)` | Degrees to radians | | |
+
+### Bindable Attributes
+
+These SVG attributes can be bound to parameters:
+
+`fill`, `stroke`, `stroke-width`, `stroke-opacity`, `fill-opacity`, `opacity`, `x`, `y`, `width`, `height`, `rx`, `ry`, `cx`, `cy`, `r`, `x1`, `y1`, `x2`, `y2`, `transform`, `d`, `points`, `textContent`, `font-size`, `font-family`, `font-weight`, `visibility`, `display`, `href`, `offset`, `stop-color`, `stop-opacity`, `dur`
+
+### Expression Examples
+
+**Color binding with RGBA converter:**
+```
+{{Converter.RGBA(ParamProps.FillColor)}}
+```
+
+**Clamped position (0–100%):**
+```
+{{Converter.Bounds(ParamProps.Position / 100, 0.0, 1.0)}}
+```
+
+**Conditional visibility from boolean:**
+```
+{{ParamProps.IsVisible ? 'inline' : 'none'}}
+```
+
+**Temperature-based color with comparator:**
+```
+{{gt(ParamProps.Temperature, 80) ? 'red' : 'green'}}
+```
+
+**Darken a color by 30%:**
+```
+{{Converter.Darker(ParamProps.BaseColor, 0.3)}}
+```
+
+**Using a local variable:**
+```
+LocalDef "Scaled" = Converter.Bounds(ParamProps.RawValue / 100, 0.0, 1.0)
+Binding: {{LocalProps.Scaled}}
+```
+
+**Rotation from parameter:**
+```
+{{rotate(ParamProps.Angle, 50, 50)}}
+```
 
 ---
 
@@ -226,7 +351,6 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 - **RAM**: 4 GB minimum, 8 GB recommended
 - **Disk Space**: 500 MB
 - **Display**: 1920x1080 or higher recommended
-- **Python**: 3.10+ (if using Python package installation)
 
 ---
 
@@ -274,7 +398,20 @@ MIT License - © M.Alsouki
 
 ## Version History
 
-### v2.0.0 (Current)
+### v3.0.0 (Current)
+
+- Complete rewrite: React 18 + TypeScript + Zustand + Vite + TailwindCSS 4 frontend
+- Tauri 2 (Rust) backend replacing Python/Qt, with roxmltree/quick-xml for SVG parsing
+- Native desktop app via Tauri webview with smaller footprint and faster startup
+- CodeMirror 6 XML editor with syntax highlighting, bracket matching, and fold gutter
+- Improved undo/redo reliability (stack consistency on errors)
+- Safer coordinate handling in canvas (null-safe SVG coordinate conversion)
+- Eliminated memory leaks in drawing overlay timer cleanup
+- Type-safe dynamic element preview with SVG element allowlist
+- Robust programmatic editor updates using CodeMirror annotations (no race conditions)
+- Smoother canvas initial layout (no zero-size flash on mount)
+
+### v2.0.0
 
 - Modern VS Code/Figma-inspired UI redesign
 - Fluent UI-style SVG icons replacing all system icons
