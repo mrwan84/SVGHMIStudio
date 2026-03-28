@@ -19,6 +19,11 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 - **Line** - Draw straight lines
 - **Text** - Add text elements with font customization
 - **Path** - Create custom paths with the pen tool
+- **Star/Polygon** - Create regular polygons and star shapes with configurable sides and inner ratio
+- **Spiral** - Draw Archimedean spirals with configurable turns
+- **Pencil** - Freehand drawing with automatic smoothing (Catmull-Rom to cubic bezier)
+- **Eyedropper** - Pick colors from any element on the canvas
+- **Measure** - Measure distances and angles between two points
 - **Direct Select** - Edit individual path points
 
 ### Editing
@@ -30,9 +35,34 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 - **Duplicate** - Ctrl+D to duplicate selected elements
 - **Align & Distribute** - Align multiple elements (left, center, right, top, middle, bottom)
 - **Arrange** - Bring to front, send to back, move forward/backward
+- **Flip Horizontal/Vertical** - Mirror elements across axes
+- **Transform Dialog** - Numeric Move, Scale, Rotate, and Skew with precise values (Ctrl+Shift+T)
 - **Properties Panel** - Edit fill, stroke, opacity, and more
 - **Layers Panel** - View and organize SVG hierarchy
 - **Undo/Redo** - Full undo history with Ctrl+Z / Ctrl+Y
+
+### Path Operations
+
+- **Object to Path** - Convert any shape (rect, ellipse, line, polygon) to a path element (Ctrl+Shift+C)
+- **Stroke to Path** - Convert an element's stroke into a filled path
+- **Combine Paths** - Merge multiple paths into a single compound path (Ctrl+K)
+- **Break Apart** - Split a compound path into separate path elements (Ctrl+Shift+K)
+- **Reverse Path** - Reverse the direction of a path
+- **Simplify Path** - Reduce path complexity using Ramer-Douglas-Peucker algorithm (Ctrl+L)
+- **Boolean Operations** - Union, Difference, Intersection, and Exclusion with arc recovery and containment detection
+
+### SVG Filters & Effects
+
+- **Object Opacity** - Per-element opacity control
+- **Gaussian Blur** - Apply configurable blur to any element
+- **Drop Shadow** - Add drop shadows with adjustable offset, blur, and color
+- **Blend Modes** - Apply CSS blend modes (multiply, screen, overlay, etc.)
+- **Filters Panel** - Manage and stack filters on elements
+
+### Markers & Clip Paths
+
+- **Markers/Arrowheads** - Add arrow, circle, square, or diamond markers to line/path endpoints
+- **Clip Path** - Use one shape to clip another; create and release clip paths via context menu
 
 ### Parameter Bindings
 
@@ -58,12 +88,13 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 - **SVGHMI Export** - Export for WinCC Unified with all bindings and proper DOCTYPE
 - **Standard SVG** - Export as regular SVG file
 - **Optimized SVG** - Compressed and optimized output
+- **PNG Export** - Export as PNG image with configurable scale and background color
 
 ---
 
 ## Installation
 
-1. Run `SVGHMIStudio_Setup_3.1.0.exe`
+1. Run `SVGHMIStudio_Setup_3.3.0.exe`
 2. Follow the installation wizard
 3. Choose installation location
 4. Select "Create desktop shortcut" if desired
@@ -145,24 +176,24 @@ Binding expressions are wrapped in double curly braces: `{{expression}}`. They l
 
 ### Reference Syntax
 
-| Syntax | Description | Example |
-| --- | --- | --- |
-| `ParamProps.Name` | Reference a widget parameter | `ParamProps.FillColor` |
-| `LocalProps.Name` | Reference a local variable | `LocalProps.ScaledValue` |
-| `'text'` | String literal | `'visible'` |
-| `123` or `0.5` | Numeric literal | `100`, `0.75` |
+| Syntax            | Description                  | Example                  |
+| ----------------- | ---------------------------- | ------------------------ |
+| `ParamProps.Name` | Reference a widget parameter | `ParamProps.FillColor`   |
+| `LocalProps.Name` | Reference a local variable   | `LocalProps.ScaledValue` |
+| `'text'`          | String literal               | `'visible'`              |
+| `123` or `0.5`    | Numeric literal              | `100`, `0.75`            |
 
 ### Arithmetic & Comparison Operators
 
-| Operator | Description | Example |
-| --- | --- | --- |
-| `+` | Addition | `ParamProps.X + 10` |
-| `-` | Subtraction | `ParamProps.Width - 20` |
-| `*` | Multiplication | `LocalProps.NormalizedValue * 100` |
-| `/` | Division | `ParamProps.Position / 100` |
-| `%` | Modulo | `ParamProps.Index % 2` |
-| `==` | Equal | `ParamProps.State == 1` |
-| `!=` | Not equal | `ParamProps.Error != 0` |
+| Operator | Description    | Example                            |
+| -------- | -------------- | ---------------------------------- |
+| `+`      | Addition       | `ParamProps.X + 10`                |
+| `-`      | Subtraction    | `ParamProps.Width - 20`            |
+| `*`      | Multiplication | `LocalProps.NormalizedValue * 100` |
+| `/`      | Division       | `ParamProps.Position / 100`        |
+| `%`      | Modulo         | `ParamProps.Index % 2`             |
+| `==`     | Equal          | `ParamProps.State == 1`            |
+| `!=`     | Not equal      | `ParamProps.Error != 0`            |
 
 ### Ternary Operator
 
@@ -170,72 +201,72 @@ Binding expressions are wrapped in double curly braces: `{{expression}}`. They l
 condition ? trueValue : falseValue
 ```
 
-| Example | Description |
-| --- | --- |
-| `ParamProps.IsActive ? 'visible' : 'hidden'` | Toggle visibility |
-| `gt(ParamProps.Temp, 100) ? 'red' : 'green'` | Conditional color |
+| Example                                                          | Description           |
+| ---------------------------------------------------------------- | --------------------- |
+| `ParamProps.IsActive ? 'visible' : 'hidden'`                     | Toggle visibility     |
+| `gt(ParamProps.Temp, 100) ? 'red' : 'green'`                     | Conditional color     |
 | `eq(ParamProps.Mode, 1) ? ParamProps.ColorA : ParamProps.ColorB` | Switch between params |
 
 ### Converter Functions
 
 Converters transform parameter values for use in SVG attributes.
 
-| Function | Signature | Description |
-| --- | --- | --- |
-| `Converter.RGBA` | `RGBA(HmiColor)` | Convert ARGB hex color (0xAARRGGBB) to `rgba()` CSS value |
-| `Converter.RGB` | `RGB(HmiColor)` | Extract RGB hex string, ignoring alpha |
-| `Converter.Alpha` | `Alpha(HmiColor)` | Extract alpha channel as 0.0–1.0 |
-| `Converter.Bounds` | `Bounds(value, min, max)` | Clamp a number between min and max |
-| `Converter.Min` | `Min(num, num)` | Returns the minimum of two numbers |
-| `Converter.Max` | `Max(num, num)` | Returns the maximum of two numbers |
-| `Converter.Darker` | `Darker(HmiColor, deviation)` | Darken a color (deviation 0.0–1.0) |
-| `Converter.Lighter` | `Lighter(HmiColor, deviation)` | Lighten a color (deviation 0.0–1.0) |
-| `Converter.Illuminate` | `Illuminate(HmiColor, deviation, low?, high?)` | Illumination variant with optional range |
-| `Converter.IsString` | `IsString(value)` | Returns true if value is a string |
-| `Converter.IsNumber` | `IsNumber(value)` | Returns true if value is a number |
-| `Converter.IsBoolean` | `IsBoolean(value)` | Returns true if value is a boolean |
-| `Converter.CountItems` | `CountItems(array)` | Count items in an array |
-| `Converter.FormatPattern` | `FormatPattern(value, pattern)` | Format a value according to a pattern string |
-| `Converter.TextDecoration` | `TextDecoration(HmiFontPart)` | Returns text decoration for a font |
-| `Converter.TextHeight` | `TextHeight(string, HmiFontPart)` | Returns text height for given text and font |
-| `Converter.TextWidth` | `TextWidth(string, HmiFontPart)` | Returns text width for given text and font |
-| `Converter.TextEllipsis` | `TextEllipsis(string, width, HmiFontPart)` | Truncates text with ellipsis if too wide |
+| Function                   | Signature                                      | Description                                               |
+| -------------------------- | ---------------------------------------------- | --------------------------------------------------------- |
+| `Converter.RGBA`           | `RGBA(HmiColor)`                               | Convert ARGB hex color (0xAARRGGBB) to `rgba()` CSS value |
+| `Converter.RGB`            | `RGB(HmiColor)`                                | Extract RGB hex string, ignoring alpha                    |
+| `Converter.Alpha`          | `Alpha(HmiColor)`                              | Extract alpha channel as 0.0–1.0                          |
+| `Converter.Bounds`         | `Bounds(value, min, max)`                      | Clamp a number between min and max                        |
+| `Converter.Min`            | `Min(num, num)`                                | Returns the minimum of two numbers                        |
+| `Converter.Max`            | `Max(num, num)`                                | Returns the maximum of two numbers                        |
+| `Converter.Darker`         | `Darker(HmiColor, deviation)`                  | Darken a color (deviation 0.0–1.0)                        |
+| `Converter.Lighter`        | `Lighter(HmiColor, deviation)`                 | Lighten a color (deviation 0.0–1.0)                       |
+| `Converter.Illuminate`     | `Illuminate(HmiColor, deviation, low?, high?)` | Illumination variant with optional range                  |
+| `Converter.IsString`       | `IsString(value)`                              | Returns true if value is a string                         |
+| `Converter.IsNumber`       | `IsNumber(value)`                              | Returns true if value is a number                         |
+| `Converter.IsBoolean`      | `IsBoolean(value)`                             | Returns true if value is a boolean                        |
+| `Converter.CountItems`     | `CountItems(array)`                            | Count items in an array                                   |
+| `Converter.FormatPattern`  | `FormatPattern(value, pattern)`                | Format a value according to a pattern string              |
+| `Converter.TextDecoration` | `TextDecoration(HmiFontPart)`                  | Returns text decoration for a font                        |
+| `Converter.TextHeight`     | `TextHeight(string, HmiFontPart)`              | Returns text height for given text and font               |
+| `Converter.TextWidth`      | `TextWidth(string, HmiFontPart)`               | Returns text width for given text and font                |
+| `Converter.TextEllipsis`   | `TextEllipsis(string, width, HmiFontPart)`     | Truncates text with ellipsis if too wide                  |
 
 ### Comparator Functions
 
 Return `true` or `false`. Arguments are numeric.
 
-| Function | Description | Example |
-| --- | --- | --- |
-| `gt(a, b)` | Greater than (a > b) | `gt(ParamProps.Value, 50)` |
-| `ge(a, b)` | Greater than or equal (a >= b) | `ge(ParamProps.Level, 0)` |
-| `lt(a, b)` | Less than (a < b) | `lt(ParamProps.Temp, 100)` |
-| `le(a, b)` | Less than or equal (a <= b) | `le(ParamProps.Speed, 200)` |
-| `eq(a, b)` | Equal (a === b) | `eq(ParamProps.State, 1)` |
-| `ne(a, b)` | Not equal (a !== b) | `ne(ParamProps.Error, 0)` |
-| `has(a, b)` | Bitwise check | `has(ParamProps.Flags, 4)` |
+| Function    | Description                    | Example                     |
+| ----------- | ------------------------------ | --------------------------- |
+| `gt(a, b)`  | Greater than (a > b)           | `gt(ParamProps.Value, 50)`  |
+| `ge(a, b)`  | Greater than or equal (a >= b) | `ge(ParamProps.Level, 0)`   |
+| `lt(a, b)`  | Less than (a < b)              | `lt(ParamProps.Temp, 100)`  |
+| `le(a, b)`  | Less than or equal (a <= b)    | `le(ParamProps.Speed, 200)` |
+| `eq(a, b)`  | Equal (a === b)                | `eq(ParamProps.State, 1)`   |
+| `ne(a, b)`  | Not equal (a !== b)            | `ne(ParamProps.Error, 0)`   |
+| `has(a, b)` | Bitwise check                  | `has(ParamProps.Flags, 4)`  |
 
 ### Logical Functions
 
-| Function | Description | Example |
-| --- | --- | --- |
-| `and(a, b)` | Logical AND | `and(ParamProps.RunA, ParamProps.RunB)` |
-| `or(a, b)` | Logical OR | `or(ParamProps.Alarm1, ParamProps.Alarm2)` |
-| `not(a)` | Logical NOT | `not(ParamProps.IsHidden)` |
+| Function    | Description | Example                                    |
+| ----------- | ----------- | ------------------------------------------ |
+| `and(a, b)` | Logical AND | `and(ParamProps.RunA, ParamProps.RunB)`    |
+| `or(a, b)`  | Logical OR  | `or(ParamProps.Alarm1, ParamProps.Alarm2)` |
+| `not(a)`    | Logical NOT | `not(ParamProps.IsHidden)`                 |
 
 ### Math Functions
 
-| Function | Description | Function | Description |
-| --- | --- | --- | --- |
-| `abs(n)` | Absolute value | `sqrt(n)` | Square root |
-| `round(n)` | Round to integer | `pow(n, exp)` | Power |
-| `floor(n)` | Round down | `log(n)` | Natural logarithm |
-| `ceil(n)` | Round up | `log10(n)` | Base-10 logarithm |
-| `sin(n)` | Sine (radians) | `asin(n)` | Inverse sine |
-| `cos(n)` | Cosine (radians) | `acos(n)` | Inverse cosine |
-| `tan(n)` | Tangent (radians) | `atan(n)` | Inverse tangent |
-| `atan2(y, x)` | 2-arg arctangent | `rad2deg(n)` | Radians to degrees |
-| `deg2rad(n)` | Degrees to radians | | |
+| Function      | Description        | Function      | Description        |
+| ------------- | ------------------ | ------------- | ------------------ |
+| `abs(n)`      | Absolute value     | `sqrt(n)`     | Square root        |
+| `round(n)`    | Round to integer   | `pow(n, exp)` | Power              |
+| `floor(n)`    | Round down         | `log(n)`      | Natural logarithm  |
+| `ceil(n)`     | Round up           | `log10(n)`    | Base-10 logarithm  |
+| `sin(n)`      | Sine (radians)     | `asin(n)`     | Inverse sine       |
+| `cos(n)`      | Cosine (radians)   | `acos(n)`     | Inverse cosine     |
+| `tan(n)`      | Tangent (radians)  | `atan(n)`     | Inverse tangent    |
+| `atan2(y, x)` | 2-arg arctangent   | `rad2deg(n)`  | Radians to degrees |
+| `deg2rad(n)`  | Degrees to radians |               |                    |
 
 ### Bindable Attributes
 
@@ -246,37 +277,44 @@ These SVG attributes can be bound to parameters:
 ### Expression Examples
 
 **Color binding with RGBA converter:**
+
 ```
 {{Converter.RGBA(ParamProps.FillColor)}}
 ```
 
 **Clamped position (0–100%):**
+
 ```
 {{Converter.Bounds(ParamProps.Position / 100, 0.0, 1.0)}}
 ```
 
 **Conditional visibility from boolean:**
+
 ```
 {{ParamProps.IsVisible ? 'inline' : 'none'}}
 ```
 
 **Temperature-based color with comparator:**
+
 ```
 {{gt(ParamProps.Temperature, 80) ? 'red' : 'green'}}
 ```
 
 **Darken a color by 30%:**
+
 ```
 {{Converter.Darker(ParamProps.BaseColor, 0.3)}}
 ```
 
 **Using a local variable:**
+
 ```
 LocalDef "Scaled" = Converter.Bounds(ParamProps.RawValue / 100, 0.0, 1.0)
 Binding: {{LocalProps.Scaled}}
 ```
 
 **Rotation from parameter:**
+
 ```
 {{rotate(ParamProps.Angle, 50, 50)}}
 ```
@@ -289,29 +327,34 @@ The WinCC runtime also provides `HmiProps.*` references (e.g., `HmiProps.Width`,
 
 ## Keyboard Shortcuts
 
-| Action          | Shortcut     |
-| --------------- | ------------ |
-| New Document    | Ctrl+N       |
-| Open            | Ctrl+O       |
-| Save            | Ctrl+S       |
-| Save As         | Ctrl+Shift+S |
-| Export SVGHMI   | Ctrl+Shift+E |
-| Validate WinCC  | Ctrl+Shift+V |
-| Undo            | Ctrl+Z       |
-| Redo            | Ctrl+Y       |
-| Delete          | Delete       |
-| Cut             | Ctrl+X       |
-| Copy            | Ctrl+C       |
-| Paste           | Ctrl+V       |
-| Duplicate       | Ctrl+D       |
-| Select All      | Ctrl+A       |
-| Group           | Ctrl+G       |
-| Ungroup         | Ctrl+Shift+G |
-| Zoom In         | Ctrl++       |
-| Zoom Out        | Ctrl+-       |
-| Zoom 100%       | Ctrl+1       |
-| Fit to Window   | Ctrl+0       |
-| Refresh Preview | F5           |
+| Action           | Shortcut     |
+| ---------------- | ------------ |
+| New Document     | Ctrl+N       |
+| Open             | Ctrl+O       |
+| Save             | Ctrl+S       |
+| Save As          | Ctrl+Shift+S |
+| Export SVGHMI    | Ctrl+Shift+E |
+| Validate WinCC   | Ctrl+Shift+V |
+| Undo             | Ctrl+Z       |
+| Redo             | Ctrl+Y       |
+| Delete           | Delete       |
+| Cut              | Ctrl+X       |
+| Copy             | Ctrl+C       |
+| Paste            | Ctrl+V       |
+| Duplicate        | Ctrl+D       |
+| Select All       | Ctrl+A       |
+| Group            | Ctrl+G       |
+| Ungroup          | Ctrl+Shift+G |
+| Zoom In          | Ctrl++       |
+| Zoom Out         | Ctrl+-       |
+| Zoom 100%        | Ctrl+1       |
+| Fit to Window    | Ctrl+0       |
+| Refresh Preview  | F5           |
+| Object to Path   | Ctrl+Shift+C |
+| Combine Paths    | Ctrl+K       |
+| Break Apart      | Ctrl+Shift+K |
+| Simplify Path    | Ctrl+L       |
+| Transform Dialog | Ctrl+Shift+T |
 
 ### Tool Shortcuts
 
@@ -324,6 +367,10 @@ The WinCC runtime also provides `HmiProps.*` references (e.g., `HmiProps.Width`,
 | Line          | L   |
 | Path/Pen      | P   |
 | Text          | T   |
+| Star/Polygon  | S   |
+| Pencil        | N   |
+| Eyedropper    | I   |
+| Measure       | M   |
 
 ---
 
@@ -361,6 +408,12 @@ The WinCC runtime also provides `HmiProps.*` references (e.g., `HmiProps.Width`,
 - Parameter value sliders
 - Animation preview
 
+### Filters Panel (Right)
+
+- Apply and manage SVG filters (blur, shadow)
+- Configure blend modes per element
+- Add/remove filter effects visually
+
 ### XML Editor (Bottom)
 
 - View raw SVG/XML code
@@ -384,43 +437,6 @@ The WinCC runtime also provides `HmiProps.*` references (e.g., `HmiProps.Width`,
 | --------- | ----------------------------------------------- |
 | `.svg`    | Standard SVG file (can be opened and edited)    |
 | `.svghmi` | WinCC Unified HMI file with bindings and params |
-
----
-
-## Building from Source
-
-### Prerequisites
-
-- **Node.js** 18+ ([nodejs.org](https://nodejs.org))
-- **Rust** toolchain ([rustup.rs](https://rustup.rs))
-- **Tauri CLI**: `cargo install tauri-cli`
-
-### Development
-
-```bash
-npm install
-npm run tauri dev
-```
-
-This starts a development server with hot-reload. The Tauri window opens automatically.
-
-### Production Build
-
-```bash
-npm run tauri build
-```
-
-The installer (`.msi` / `.exe`) is generated in `src-tauri/target/release/bundle/`.
-
-### Frontend Only (no Tauri)
-
-```bash
-npm run dev
-```
-
-Opens the web UI at `http://localhost:1420` without the Tauri backend. File I/O and export features require the full Tauri build.
-
----
 
 ## Troubleshooting
 
@@ -457,7 +473,96 @@ MIT License - © M.Alsouki
 
 ## Version History
 
-### v3.1.0 (Current)
+### v3.3.0 (Current)
+
+#### New Drawing Tools
+
+- **Star/Polygon tool** (S) - Draw regular polygons and stars with configurable sides (3-32) and inner radius ratio
+- **Spiral tool** - Draw Archimedean spirals with configurable turns (1-20)
+- **Pencil/Freehand tool** (N) - Freehand drawing with automatic Catmull-Rom to cubic bezier smoothing
+- **Eyedropper tool** (I) - Pick fill color from any element on the canvas
+- **Measure tool** (M) - Measure distance (px), angle (degrees), and dx/dy between two points on the canvas
+- **Contextual Tool Options bar** - Adjustable parameters per tool (star sides/mode/inner ratio, spiral turns, pencil smoothing)
+
+#### Path Operations (new Path menu)
+
+- **Object to Path** (Ctrl+Shift+C) - Convert rect, ellipse, circle, line, polygon, polyline to path elements
+- **Stroke to Path** - Convert stroke outlines into filled path geometry
+- **Combine Paths** (Ctrl+K) - Merge multiple paths into a single compound path
+- **Break Apart** (Ctrl+Shift+K) - Split compound paths at M commands into separate path elements
+- **Reverse Path Direction** - Reverse path winding order (handles arc paths with sweep flag flipping)
+- **Simplify Path** (Ctrl+L) - Reduce path complexity with Ramer-Douglas-Peucker algorithm
+- **Boolean Union** - Merge overlapping shapes into one outline
+- **Boolean Difference** - Subtract one shape from another, with proper hole creation for containment cases
+- **Boolean Intersection** - Keep only the overlapping region (Sutherland-Hodgman polygon clipping)
+- **Boolean Exclusion** - Keep non-overlapping areas with evenodd fill-rule
+- Arc recovery in boolean results: detects points lying on original ellipses and restores SVG Arc commands with correct per-arc sweep flags
+
+#### SVG Filters & Effects
+
+- **Object Opacity** slider in Properties panel (0-1 range)
+- **Gaussian Blur** slider - Apply and adjust feGaussianBlur filter dynamically
+- **Drop Shadow** - Configurable feDropShadow with dx, dy, blur radius, and color
+- **Blend Modes** dropdown - Apply mix-blend-mode (multiply, screen, overlay, darken, lighten, etc.)
+- **Filters Panel** - Dedicated panel for managing filter effects on selected elements
+
+#### Transform & Flip
+
+- **Flip Horizontal / Flip Vertical** - Mirror elements across bounding box center (in Edit menu and context menu)
+- **Transform Dialog** (Ctrl+Shift+T) - Numeric input for Move (dx/dy), Scale (sx/sy%), Rotate (angle + center), and Skew (horizontal/vertical)
+
+#### Markers & Arrowheads
+
+- Add start/end markers to line, path, polyline, and polygon elements
+- Predefined marker types: Arrow, Circle, Square, Diamond
+- Marker defs management with automatic cleanup of unused markers
+
+#### Clip Path Support
+
+- **Create Clip Path** - Use one shape to clip another via context menu
+- **Release Clip Path** - Restore clipped elements to normal rendering
+
+#### PNG Export
+
+- **File > Export as PNG** - Export current document as PNG with configurable scale (1x, 2x) and background color
+
+#### Bug Fixes
+
+- Fixed S (smooth cubic) and T (smooth quadratic) SVG path commands not tracking reflected control points correctly
+- Fixed Sutherland-Hodgman clipping requiring CW-normalized input polygons for correct intersection results
+- Fixed `replaceElementInTree` always creating new array references even when no replacement occurred
+- Fixed polygon/polyline empty `points` attribute causing NaN corruption in offset and flip operations
+- Fixed division by zero in `arcToCubicBeziers` when arc half-segment is zero
+- Fixed export-utils attribute filter using wrong logical operator (attributes were not stripped correctly)
+
+### v3.2.0
+
+- Fixed critical ID collision bug when loading documents (element IDs could overlap with generated IDs)
+- Fixed infinite loop when redoing alignment operations
+- Fixed stale state in undo/redo for cut, delete, align, and reorder operations
+- Fixed parameter `unit` attribute being dropped on save (was only preserved on export)
+- Fixed auto-ID counter not resetting between file opens (caused binding loss on round-trip)
+- Fixed WinCC validation failing on files with DOCTYPE declarations
+- Fixed reorder (z-order) operations not working for elements inside groups
+- Fixed deleting a group leaving orphaned child IDs in selection state
+- Fixed hmiColor picker in Preview panel showing wrong colors (0xAARRGGBB now converted correctly)
+- Fixed Color Picker committing wrong color when clicking outside (stale closure)
+- Fixed undo/redo stack corruption when a command throws an error
+- Fixed active panel tab fallback pointing to a disabled panel
+- Fixed gradient editor not finding gradients in secondary `<defs>` elements
+- Fixed Preview panel gradient bindings not updating (DOM ID collision with main canvas)
+- Fixed `Ctrl+A` only selecting top-level elements (now includes nested/grouped elements)
+- Fixed path elements not being offset when pasting or aligning
+- Fixed SVG number parsing dropping shorthand values like `.5` (valid SVG for `0.5`)
+- Fixed zoom-to-selection producing extreme zoom on zero-dimension selections
+- Fixed custom dash pattern input being unreachable in Properties panel
+- Fixed XML Editor `parseIdCounter` producing non-deterministic IDs across applies
+- Fixed `pointerEvents: 'none'` on guide overlay blocking double-click to remove guides
+- Fixed SVG optimize "Remove non-essential IDs" being a no-op
+- Fixed select dropdown arrows not showing (Tailwind CSS reset override)
+- Improved `removeElementFromTree` to preserve object references for better React memoization
+
+### v3.1.0
 
 - Enhanced Color Picker with recent colors and popover UI
 - Alignment & Distribution toolbar (align L/C/R/T/M/B, distribute H/V)
@@ -476,7 +581,7 @@ MIT License - © M.Alsouki
 
 ### v3.0.1
 
-- Window title shows file path and unsaved indicator (*)
+- Window title shows file path and unsaved indicator (\*)
 - Theme preference persists across app restarts
 - Unsaved changes guard on window close
 - Parameter/binding/local def changes now mark document as dirty
