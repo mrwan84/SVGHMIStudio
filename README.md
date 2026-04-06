@@ -87,14 +87,14 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 
 - **SVGHMI Export** - Export for WinCC Unified with all bindings and proper DOCTYPE
 - **Standard SVG** - Export as regular SVG file
-- **Optimized SVG** - Compressed and optimized output
+- **Optimized SVG** - Plugin-based optimizer with 31 SVGO-inspired plugins
 - **PNG Export** - Export as PNG image with configurable scale and background color
 
 ---
 
 ## Installation
 
-1. Run `SVGHMIStudio_Setup_3.3.0.exe`
+1. Run `SVGHMIStudio_Setup_3.5.0.exe`
 2. Follow the installation wizard
 3. Choose installation location
 4. Select "Create desktop shortcut" if desired
@@ -473,7 +473,71 @@ MIT License - © M.Alsouki
 
 ## Version History
 
-### v3.3.0 (Current)
+### v3.5.0 (Current)
+
+#### CSS Style Inlining
+
+- **Automatic CSS `<style>` inlining on file open** — SVGs using `<style>` tags with class selectors (e.g., `.box { fill: #e6f2ff; }`) are automatically resolved into individual SVG attributes on each element, making them editable in the Properties panel and compatible with WinCC
+- **Edit > Inline CSS Styles** menu action — Manually inline CSS styles on already-open documents
+- **Inline CSS Styles dialog** — Shows a summary of inlined rules with before/after preview
+- **Optimizer plugin** — `inlineCssStyles` plugin added to the SVG optimizer pipeline for export-time CSS inlining
+- Supports `.class`, `tag`, `#id`, `tag.class`, and comma-separated selector groups
+- Respects specificity: inline `style=""` > element attributes > class rules > tag rules
+
+#### Text Element Handling Improvements
+
+- Fixed browser native text selection interfering with canvas element selection (added `user-select: none` to SVG canvas)
+- Fixed `<tspan>` elements being individually selectable — clicking any part of a `<text>` element now selects the whole text, not individual tspans
+- Fixed text elements with `text-anchor` attribute (middle/end) shifting left when dragged — now uses delta-based positioning instead of absolute
+- Fixed text bounding box calculation using DOM `getBBox()` for accurate bounds (handles tspan children, fonts, and text-anchor correctly)
+- Fixed tspan child coordinates not updating when moving or resizing text elements
+
+#### Bug Fixes
+
+- Fixed `font-size` with `px` unit (e.g., "14px") not displaying in the Properties panel number input
+
+### v3.4.0
+
+#### SVG Optimizer — SVGO-Inspired Plugin Engine
+
+Complete rewrite of the SVG optimization system with a plugin-based architecture inspired by [SVGO](https://github.com/svg/svgo). 31 optimization plugins organized into 8 categories, with 5 built-in profiles and multipass support.
+
+**New Plugin Categories & Plugins:**
+
+- **Cleanup** (7 plugins) — removeEmptyAttrs, removeEmptyText, removeDeprecatedAttrs, cleanupEnableBackground, sortAttrs, sortDefsChildren, cleanupListOfValues
+- **Color** (1 plugin) — convertColors: normalize `rgb()` to hex, shorten `#RRGGBB` to `#RGB`, resolve named colors
+- **Shape Conversion** (2 plugins) — convertShapeToPath (rect/circle/ellipse/line/polygon/polyline to `<path>`), convertEllipseToCircle (equal-radius ellipse to circle)
+- **Style / Attributes** (5 plugins) — convertStyleToAttrs (critical for WinCC — converts CSS `style` attribute to individual SVG attributes), removeUselessStrokeAndFill, removeNonInheritableGroupAttrs, moveElemsAttrsToGroup, moveGroupAttrsToElems
+- **Structure** (2 plugins) — removeUselessDefs, convertOneStopGradients (single-stop gradient to plain color)
+- **Path Optimization** (2 plugins) — convertPathData (H/V shorthand, relative coords, redundant command removal), mergePaths (merge adjacent paths with identical attributes)
+- **Transform** (1 plugin) — convertTransform (remove identity, merge consecutive, simplify `translate(x,0)` to `translate(x)`)
+- **Miscellaneous** (2 plugins) — removeOffCanvasPaths, removeRasterImages
+
+**Optimization Profiles:**
+
+| Profile      | Description                                               |
+| ------------ | --------------------------------------------------------- |
+| Safe         | Minimal, non-destructive (7 plugins)                      |
+| Moderate     | Safe + structural cleanup (13 plugins)                    |
+| Aggressive   | Maximum optimization (26 plugins)                         |
+| HMI Safe     | Safe with HMI preservation forced on                      |
+| WinCC Export | Optimized for WinCC — always includes convertStyleToAttrs |
+
+**UI:**
+
+- Redesigned Optimize SVG dialog with category-based plugin list and per-plugin toggles
+- Profile dropdown auto-sets plugin toggles; manual changes switch to "Custom"
+- WinCC badge highlights the `convertStyleToAttrs` plugin
+
+#### Bug Fixes
+
+- Fixed exported SVGHMI files missing DOCTYPE declaration and attribution comment
+- Fixed ExportDialog missing `extended.` prefix validation on widget name
+- Fixed ExportDialog missing opacity range validation (0.0–1.0)
+- Fixed ExportDialog missing orphan binding check for deleted elements
+- Added SVG interactivity event attributes (onclick, onmouseover, etc.) and animation event attributes (onbegin, onend, onrepeat) to WinCC validation warnings
+
+### v3.3.0
 
 #### New Drawing Tools
 
