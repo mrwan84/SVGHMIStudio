@@ -94,7 +94,7 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 
 ## Installation
 
-1. Run `SVGHMIStudio_Setup_3.5.0.exe`
+1. Run `SVGHMIStudio_Setup_3.5.2.exe`
 2. Follow the installation wizard
 3. Choose installation location
 4. Select "Create desktop shortcut" if desired
@@ -473,7 +473,78 @@ MIT License - © M.Alsouki
 
 ## Version History
 
-### v3.5.0 (Current)
+### v3.5.2 (Current)
+
+#### Modern UI Redesign
+
+- **New design system** — Introduced a comprehensive design token system with semantic surface elevations (`--bg-primary`, `--bg-secondary`, `--bg-sidebar`, `--bg-input`, `--bg-elevated`, `--bg-hover-subtle`), a text hierarchy (primary/secondary/tertiary/inverse), and soft accent variants
+- **Modern indigo accent** — Replaced the dated Microsoft blue with a clean indigo palette (`#4f46e5` light / `#7c7aed` dark) for a more contemporary feel
+- **Refined dark mode** — Deeper, richer dark palette with better contrast (slate-based) and properly tuned accent luminance
+- **Shadow & radius scale** — Added `--shadow-xs` through `--shadow-xl` and `--radius-xs` through `--radius-xl` design tokens used consistently across all components
+- **Motion tokens** — Standardized transition timings (`--transition-fast`, `--transition-base`) for consistent micro-interactions
+- **Inter font stack** — Upgraded to Inter as the primary typeface with proper antialiasing, tabular numerals for shortcuts/zoom percentages, and optimized text rendering
+- **Modern scrollbars** — Thin (10px) rounded scrollbars with transparent tracks for a cleaner look
+- **Focus rings** — Visible accent-colored focus rings on all interactive elements for better accessibility
+
+#### Layout & Navigation Improvements
+
+- **Tool rail repositioned** — Drawing tools moved to the leftmost edge (Figma/Sketch convention) with a wider 44px rail for better ergonomics
+- **Grouped tool palette** — Drawing tools are now organized into logical clusters (Select / Shapes / Drawing / Utilities) separated by subtle dividers
+- **Active tool indicator** — Active drawing tool now shows an accent fill with shadow plus a left-edge indicator pill
+- **Modern segmented tab bar** — Right sidebar tabs replaced with pill-shaped segmented buttons (accent fill on active tab) instead of the old underline style
+- **Polished resize handles** — Subtle 1px idle line that reveals a grip indicator pill on hover, turning solid accent while dragging
+- **Backdrop tint** — Subtle secondary background tint between panels for better visual separation
+
+#### Toolbar & Menu Polish
+
+- **Taller toolbar** (44px) with modern rounded buttons, smooth hover states, and accent-soft highlights for active buttons
+- **Zoom percentage chip** styled as a bordered input pill with tabular numerals
+- **Filename badge** — Current filename displayed in a rounded pill with a colored dirty indicator dot
+- **Menu bar refinements** — Taller menu bar (34px), rounded menu buttons with accent-soft active state
+- **Elevated dropdowns** — Menu dropdowns now use larger radius, layered shadows, and full accent hover fill on items (instead of flat gray)
+- **Shortcut chips** in menus use tabular numerals for better alignment
+
+#### Dialog Modernization
+
+- **Animated entrances** — Dialogs now fade in with a subtle scale and translate animation
+- **Backdrop blur** — Modal backdrop now uses a blur effect for better focus on the dialog content
+- **Header & footer dividers** — Clearer visual structure with bordered header and footer action bars
+- **Larger radius** (14px) and richer multi-layer shadows for a premium feel
+- **Enhanced form controls** — Inputs, selects, and checkboxes have hover states, focus rings, and better padding
+- **Hover-lift OK button** — Primary action button subtly lifts on hover for better affordance
+
+### v3.5.1
+
+#### Group & Transform Fixes
+
+- **Fixed group bounding box ignoring child transforms** — Groups containing rotated, skewed, or otherwise transformed children now show an accurate selection box using DOM `getBBox()` instead of computing the union of untransformed attribute bounds
+- **Fixed moving groups with rotated children** — Moving a group now correctly updates the rotation center (`cx`, `cy`) of each child's `transform="rotate(...)"`, preventing elements from jumping to incorrect positions
+- **Fixed spurious history entries on click/double-click** — Clicking or double-clicking an element without actually moving it no longer pushes empty "Move element" or "Resize element" entries to the undo history
+
+#### CSS Style Inlining Improvements
+
+- **CSS inlining now uses the SVGO optimizer pipeline** — Both the file-open dialog and the Edit menu action run the `inlineCssStyles` + `convertStyleToAttrs` optimizer plugins via `runOptimizer()`, ensuring consistent behavior across all inlining paths
+- **Fixed inline `style=""` attributes not being processed** — SVGs with `style=""` attributes (e.g., `style="stop-color:#1d4ed8"` on gradient stops) but no `<style>` tags are now correctly inlined
+- **Fixed CSS parser breaking on nested @-rules** — Replaced naive `split('}')` parsing with brace-depth-aware block extraction, correctly handling `@keyframes`, `@media`, and other nested CSS rules
+
+#### Additional Bug Fixes
+
+- Fixed Properties panel committing multiple undo entries per edit (now batches keystrokes into a single undo entry on blur/Enter)
+- Fixed Properties panel element ID field being editable (now read-only to prevent breaking references)
+- Fixed Select All (Ctrl+A) selecting non-visual elements (defs, clipPath, filter, etc.)
+- Fixed arrow key nudging not working on grouped elements
+- Fixed marquee selection not finding nested elements inside groups
+- Fixed text edit overlay position not accounting for canvas pan offset
+- Fixed Parameters panel and Bindings panel local state not syncing on undo/redo
+- Fixed Transform dialog allowing negative dimensions from scale operations
+- Fixed Fit to Window not resetting pan position (canvas could appear off-center)
+- Fixed `releaseClipPath` redo causing infinite history recursion
+- Fixed `ungroupElements` not working for nested groups (now uses recursive tree replacement)
+- Fixed `saveFile` / `saveFileAs` silently swallowing errors (now shows alert on failure)
+- Fixed rotation handle disappearing for path/text elements (separated rotate handle from resize handle visibility)
+- Fixed odd-length polygon/polyline points array causing NaN in offset calculations
+
+### v3.5.0
 
 #### CSS Style Inlining
 
