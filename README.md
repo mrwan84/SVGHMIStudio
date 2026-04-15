@@ -94,7 +94,7 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 
 ## Installation
 
-1. Run `SVGHMIStudio_Setup_3.5.4.exe`
+1. Run `SVGHMIStudio_Setup_3.5.5.exe`
 2. Follow the installation wizard
 3. Choose installation location
 4. Select "Create desktop shortcut" if desired
@@ -473,7 +473,15 @@ MIT License - © M.Alsouki
 
 ## Version History
 
-### v3.5.4 (Current)
+### v3.5.5 (Current)
+
+#### Align & Distribute Fixes
+
+- **Context menu Align now works** — The Align submenu in the canvas context menu previously used a duplicated, out-of-date implementation that silently failed for many shape types. It now delegates to the same shared `alignElements` used by the Alignment toolbar, so both entry points behave identically
+- **Align/Distribute respect rotated bounds** — Rotated elements are now aligned and distributed by their visual (axis-aligned) bounding box instead of their pre-rotation local bbox, matching what you see on screen
+- **Rotation pivot follows translation** — When an align/distribute move translates a rotated element, the rotation center (`cx`, `cy`) in `transform="rotate(...)"` is shifted by the same offset, so the element translates by exactly the requested delta in document space (same pattern used by drag-to-move)
+
+### v3.5.4
 
 #### Animation Rotation Center Fix
 
