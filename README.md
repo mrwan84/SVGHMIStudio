@@ -94,7 +94,7 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 
 ## Installation
 
-1. Run `SVGHMIStudio_Setup_3.5.2.exe`
+1. Run `SVGHMIStudio_Setup_3.5.4.exe`
 2. Follow the installation wizard
 3. Choose installation location
 4. Select "Create desktop shortcut" if desired
@@ -473,7 +473,49 @@ MIT License - © M.Alsouki
 
 ## Version History
 
-### v3.5.2 (Current)
+### v3.5.4 (Current)
+
+#### Animation Rotation Center Fix
+
+- **Auto Center now works for all shape types** — The "Auto Center (from element)" button in the rotate animation panel now correctly computes the center for polygons, stars, polylines, lines, paths, and text (previously only rect/circle/ellipse were supported; everything else silently returned 0,0)
+
+### v3.5.3
+
+#### Toast Notification System
+
+- **User-visible feedback** — File open/save errors, export success/failure, and validation results now shown as toast notifications instead of silent console errors
+- **Auto-dismiss** — Success toasts dismiss after 4s, error toasts after 6s, with manual close button
+- **Themed styling** — Color-coded left border (green/red/amber/blue) matching the notification type
+
+#### Dashed Stroke Support
+
+- **Dash pattern dropdown** — Custom dropdown selector with inline SVG preview lines for each dash preset (Solid, Dashed, Dotted, Dash-Dot, Dash-Dot-Dot)
+- **Custom patterns** — "Custom..." option allows entering arbitrary `stroke-dasharray` values
+- **Stroke dash offset** — New numeric input for `stroke-dashoffset` control
+- **Bug fix** — Fixed a bug where selecting "Custom" wrote the literal string `'custom'` as the SVG attribute
+
+#### Real-Time Expression Validation
+
+- **Inline validation** — Binding expressions are now validated as you type in the Bindings panel
+- **Reference checking** — Validates `ParamProps.*`, `LocalProps.*`, and `Converter.*()` references against defined parameters, local variables, and known converters
+- **Syntax checks** — Detects unbalanced parentheses and unknown references
+- **Disabled submit** — Add/Save buttons are disabled when validation errors are present
+
+#### Batch Export
+
+- **Multi-format export** — Export dialog now includes "Also export as SVG" and "Also export as PNG" checkboxes
+- **PNG scale selector** — Choose 1x, 2x, or 4x resolution for PNG exports
+- **Automatic naming** — Additional formats saved to the same directory with matching base filename
+
+#### Smart Snap Enhancements
+
+- **Snap to centers** — Elements snap to the center points of other elements
+- **Snap to edge midpoints** — Elements snap to midpoints of other elements' edges
+- **Smart spacing guides** — Detects and snaps to equal spacing between elements (horizontal and vertical)
+- **Color-coded snap lines** — Edge snaps (magenta), center snaps (purple), spacing guides (cyan)
+- **View menu controls** — New "Element Snapping" submenu with toggles for each snap type
+
+### v3.5.2
 
 #### Modern UI Redesign
 
