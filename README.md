@@ -12,6 +12,15 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 
 ## Features
 
+### Workspace and precise editing
+
+- Drag the separators to resize Layers, the inspector, or XML. Focus a separator and use arrow keys (Shift for larger steps), Home/End for its limits, or Enter/double-click to reset its size. Panel sizes, visibility, inspector tab, and collapsed property sections are remembered locally. **Reset layout** restores these preferences without changing the document.
+- Use **Fit Page**, **Fit Drawing**, or **Fit Selection** above the canvas. Fit Drawing includes off-page objects. The status strip shows page size, selected bounds in document units, and grid/snap feedback. The zoom percentage accepts direct input.
+- In Layers, arrow keys navigate and expand groups, **F2** edits a display name, and **Enter** or double-click fits the object. Names are stored as `data-label`; IDs and HMI references stay intact. Visibility and lock buttons control editing. Layer order changes remain undoable.
+- Properties have collapsible groups and labelled numeric fields. Negative and fractional values are accepted; unfinished numbers stay in the field until valid. Up/Down adjusts a value, Shift uses larger steps, Enter commits, and Escape restores the value from focus.
+- XML shows synchronization, pending edits, conflicts, and validation messages separately. **Format XML** formats the whole buffer; **Indent selection** only indents the selection. Neither applies or saves the document. Hiding XML preserves its draft.
+- Preview is labelled **Simulation only**. Its values affect the preview, not saved parameter defaults. Reset simulation restores defaults; opening another document resets simulation values. Parameters and Bindings remain document edits.
+
 ### Drawing Tools
 
 - **Rectangle** - Create rectangular shapes with rounded corners
@@ -81,6 +90,9 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 
 ### Canvas, Grid & Snapping
 
+- **Page and pasteboard** - The white page defines the document viewport. Objects can cross any edge or sit entirely outside it, including at negative coordinates. Drag, arrow-key movement, coordinate fields and transforms preserve the page size and `viewBox`.
+- **Navigation** - Pan with the middle mouse button and drag. The mouse wheel zooms around the pointer. Holding a captured drag near a viewport edge pans the camera. Fit Page frames the document; Fit Drawing includes off-page graphics; Fit Selection frames selected objects. Layers remain available for objects outside the current view.
+- **Save and output** - Save retains off-page coordinates and transforms. Live Preview and export retain the document viewport; the editor pasteboard is not exported. Page dimensions can be edited explicitly in Document Properties; there is no new automatic resize-to-content action.
 - **Grid size presets** - Click the grid-size picker next to the Snap-to-Grid toggle for WinCC-compatible presets (5 / 10 / 20 / 25 / 50 px) or enter a custom value
 - **Snap to grid** - Toggle with the toolbar button; combines with element snapping for precise alignment
 - **Smart snapping** - Elements snap to edges, centers, and edge midpoints of other elements; cyan guides show equal spacing
@@ -111,7 +123,7 @@ SVGHMIStudio is a specialized SVG graphics editor designed for creating HMI (Hum
 
 ## Installation
 
-1. Run `SVGHMIStudio_Setup_3.5.6.exe`
+1. Run the SVGHMIStudio 3.5.8 installer when it is available.
 2. Follow the installation wizard
 3. Choose installation location
 4. Select "Create desktop shortcut" if desired
@@ -375,19 +387,19 @@ The WinCC runtime also provides `HmiProps.*` references (e.g., `HmiProps.Width`,
 
 ### Selection & Alignment
 
-| Action                       | Shortcut          |
-| ---------------------------- | ----------------- |
-| Cycle next top-level element | Tab               |
-| Cycle previous element       | Shift+Tab         |
-| Edit path / text in place    | Enter             |
-| Nudge selection (1 px)       | Arrow keys        |
-| Nudge selection (10 px)      | Shift+Arrow       |
-| Align left                   | Alt+Shift+L       |
-| Align right                  | Alt+Shift+R       |
-| Align center (horizontal)    | Alt+Shift+H       |
-| Align top                    | Alt+Shift+T       |
-| Align bottom                 | Alt+Shift+B       |
-| Align center (vertical)      | Alt+Shift+V       |
+| Action                       | Shortcut    |
+| ---------------------------- | ----------- |
+| Cycle next top-level element | Tab         |
+| Cycle previous element       | Shift+Tab   |
+| Edit path / text in place    | Enter       |
+| Nudge selection (1 px)       | Arrow keys  |
+| Nudge selection (10 px)      | Shift+Arrow |
+| Align left                   | Alt+Shift+L |
+| Align right                  | Alt+Shift+R |
+| Align center (horizontal)    | Alt+Shift+H |
+| Align top                    | Alt+Shift+T |
+| Align bottom                 | Alt+Shift+B |
+| Align center (vertical)      | Alt+Shift+V |
 
 ### Tool Shortcuts
 
@@ -449,9 +461,15 @@ The WinCC runtime also provides `HmiProps.*` references (e.g., `HmiProps.Width`,
 
 ### XML Editor (Bottom)
 
-- View raw SVG/XML code
-- Manual editing with syntax highlighting
-- Apply changes with "Apply" button
+- Edit SVG/HMI with syntax highlighting, line numbers, folding, tag/bracket matching and SVG/HMI completions. Use **Search / Replace** (Ctrl+F), Tab to indent, and Ctrl+Space for completions.
+- XML is automatically pretty-printed on initial display and clean canvas synchronization: two-space structural indentation, the declaration on its own line, and long attribute lists on indented lines. This presentation step does not mark the document dirty or create an XML draft.
+- **Format XML** pretty-prints the entire editor document as one XML undo step; **Indent selection** only adjusts the selected lines. Formatting does not Apply or Save. Pending edits remain untouched while typing or when the canvas changes. Invalid XML remains unchanged and displays a diagnostic.
+- Formatting retains raw attribute values, namespace prefixes, expressions, comments and CDATA. Mixed text, text/tspan elements, embedded CSS and xml:space="preserve" regions remain untouched, so these regions may intentionally stay on long lines. Cursor and scroll positions are mapped through formatting edits where practical.
+- Validation runs after a typing pause through the same HMI-aware native parser used to open files. Errors include locations when the parser supplies them; **Go to error** moves the cursor there. Invalid XML cannot replace the current document.
+- **Apply** commits SVG elements, definitions, parameters, bindings and widget metadata together as one document undo operation. **Revert** asks before discarding the draft. The status indicates unapplied changes; hiding the panel preserves them.
+- Canvas edits synchronize into the editor when no draft is pending. If both versions change, choose **Replace canvas with XML** or **Revert to canvas** explicitly. Applying the XML remains undoable.
+- Save, New, Open and native Close require a decision about pending XML. Apply it, discard it, or cancel the pending action. Ctrl+S also works inside the XML editor. Recovery retains both the canvas state and any unapplied XML, including conflicts.
+- Ctrl+Z while typing undoes XML text edits. Use the application Undo action after Apply to restore the previous complete SVG/HMI document.
 
 ---
 
@@ -472,6 +490,17 @@ The WinCC runtime also provides `HmiProps.*` references (e.g., `HmiProps.Width`,
 | `.svghmi` | WinCC Unified HMI file with bindings and params |
 
 ## Troubleshooting
+
+### Native build fails after moving the project
+
+If `failed to read plugin permissions` names a file under the project's **old location**, the Cargo release cache contains stale generated Tauri paths. Stop any active build and, from the project root, run:
+
+```powershell
+cargo clean --manifest-path src-tauri/Cargo.toml --release
+npm run tauri:build
+```
+
+Cleaning removes generated release artifacts, including previous release binaries and installer bundles; copy any you need to keep first. It does not change source files or dependency lockfiles. The next build regenerates the cache at the current location. Frontend CSS, annotation and chunk-size warnings are separate from this missing-file error.
 
 ### SVG not displaying correctly
 
