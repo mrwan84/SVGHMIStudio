@@ -2,7 +2,25 @@
 
 All notable changes to SVGHMIStudio. The most recent release is at the top; older releases follow in descending order. For the current feature set and usage documentation see [README_User.md](./README_User.md).
 
-## v3.5.6 (Current)
+## v3.5.8 (Current; local source, not published)
+
+- **TypeScript and formatting cleanup** — Resolved all 1,048 strict TypeScript diagnostics and 59 formatting failures without weakening checks. Added checked SVG argument groups, explicit missing-value handling and 15 regression tests for path operations and preview bindings.
+- **Version consistency** — Synchronized npm manifests, lockfiles, Rust/Tauri configuration, the About dialog and installation documentation to 3.5.8.
+
+---
+
+## v3.5.7
+
+- **Audit fixes** — Hardened Live Preview sanitization, CSP and sandboxing; corrected cancelled/failed and overlapping saves, revision-aware recovery, atomic SVG/HMI Apply, transformed movement, grouping order and copied references. Restored mixed text/CSS rendering and working lint/format checks; remediated the audited dependency vulnerabilities.
+- **XML editor** — Added highlighting, line numbers, folding, matching, search/replace, completions and parser diagnostics. Apply is one SVG/HMI undo operation; explicit conflict choices and save/close guards protect pending XML drafts and recovery.
+- **XML formatting** — Pretty-print clean loads and canvas synchronization with two-space structural indentation and multiline attributes. Added an undoable **Format XML** action separate from **Indent selection**, preserving mixed content, meaningful whitespace, CSS and HMI expressions.
+- **Off-page editing** — Added a surrounding pasteboard, negative-coordinate editing, pan/zoom, controlled edge auto-pan and separate Fit Page/Drawing/Selection actions. Saves retain off-page geometry without changing page dimensions, viewBox or output clipping.
+
+**Verification limits:** The pre-bump source passed 194 frontend and 8 Rust tests, typecheck, lint and frontend/native builds. Direct preview-frame parent/IPC isolation probes remain open; final XML/pasteboard desktop verification is blocked by Windows access denied (`0x80070005`). Existing debt remains 1,052 advisory TypeScript diagnostics and 66 formatting files. No release-installer behavior or Siemens WinCC runtime compatibility is claimed.
+
+---
+
+## v3.5.6
 
 Large correctness, robustness, and UX sweep across eight themed areas: code-duplication cleanup, transform correctness, align / distribute UX, HMI-specific features, performance, robustness, developer ergonomics, and accessibility & i18n. Every top-recommendation item shipped. No breaking changes — all additions are opt-in or transparently back-compatible.
 
