@@ -1,8 +1,17 @@
 # Changelog
 
 All notable changes to SVGHMIStudio. The most recent release is at the top; older releases follow in descending order. For the current feature set and usage documentation see [README_User.md](./README_User.md).
+## v3.5.9 (Current)
 
-## v3.5.8 (Current)
+- **Editor layout** — Added Design/Data/Motion Inspector groups, a collapsible XML/Search/Validation drawer, and compact floating canvas navigation. Dense panels remain opaque; existing layout preferences are preserved.
+- **XML workflow** — Retain drafts, selection and XML undo history across drawer collapse. Restore keyboard focus to the drawer rail and defer clean XML serialization while hidden.
+- **Readability** — Strengthened theme contrast, enlarged History controls, and updated EN/DE navigation labels.
+- **Version consistency** — Synchronized npm and Rust manifests/lockfiles, Tauri configuration, the About dialog and installation documentation to 3.5.9.
+
+The UI redesign passed 226 frontend tests and 8 Rust tests
+
+---
+## v3.5.8 
 
 - **TypeScript and formatting cleanup** — Resolved all 1,048 strict TypeScript diagnostics and 59 formatting failures without weakening checks. Added checked SVG argument groups, explicit missing-value handling and 15 regression tests for path operations and preview bindings.
 - **Version consistency** — Synchronized npm manifests, lockfiles, Rust/Tauri configuration, the About dialog and installation documentation to 3.5.8.
